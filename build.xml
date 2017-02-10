@@ -1,0 +1,85 @@
+<project name="Retrieve and Deploy SFDC metadata" default="sfdcDetails" basedir="." xmlns:sf="antlib:com.salesforce">
+    <property file="${basedir}/build.properties"/>
+    <property file="${basedir}/environments/${env}.properties"/>
+
+    <condition property="sf.username" value=""> <not> <isset property="sf.username"/> </not> </condition>
+    <condition property="sf.password" value=""> <not> <isset property="sf.password"/> </not> </condition>
+    <condition property="sf.sessionId" value=""> <not> <isset property="sf.sessionId"/> </not> </condition>
+    
+    <taskdef resource="com/salesforce/antlib.xml" uri="antlib:com.salesforce">
+        <classpath>
+            <pathelement location="../ant-salesforce.jar" />        	
+        </classpath>
+    </taskdef>
+    
+	<property name="passwordToken" value="${sf.password}${sf.token}"/>
+	<property name="srcDir" value="${basedir}/src" />
+	<property name="srcDirCopy" value="${basedir}/src-copy" />
+	
+	<target name="sfdcDetails">
+		<echo>Environment: ${env}</echo>
+		<echo>Username: ${sf.username}</echo>
+		<echo>Server url: ${sf.serverurl}</echo>
+	</target>
+	
+	<target name="retrieve" depends="sfdcDetails,retrieveMetadata,copyMetadata">
+	</target>
+	
+    <target name="retrieveMetadata">
+      <echo level="info">Retrieving the server's version of code ${sf.username} ${sf.serverurl}</echo>
+      <!-- Retrieve the contents into a temp directory -->      
+      <mkdir dir="${srcDirCopy}"/>
+      <sf:retrieve
+        retrieveTarget="${srcDirCopy}"
+        username="${sf.username}"
+        password="${passwordToken}"
+        serverurl="${sf.serverurl}"
+        unpackaged="package/package.xml"/>
+    </target>
+      <!-- Remove unwanted metadata specified on this target -->      	
+	<target name="copyMetadata">
+		<echo>Copying source to ${srcDir} to exclude unwanted files</echo>
+		<delete dir="${srcDir}"/>
+    <mkdir dir="${srcDir}"/>
+		<copy todir="${srcDir}">
+			<fileset dir="${srcDirCopy}">
+				<exclude name="layouts/SocialPost-Social Post Layout.layout"/>
+        <exclude name="workflows/Reply.workflow"/>
+        <exclude name="workflows/SocialPost.workflow"/>
+        <exclude name="workflows/Question.workflow"/>        
+        <exclude name="settings/Search.settings"/>        
+      </fileset>
+		</copy>
+		<!-- removes an element from profile -->
+		<replaceregexp match="&lt;layoutAssignments&gt;\s*&lt;layout&gt;SocialPost-Social Post Layout&lt;/layout&gt;\s*&lt;/layoutAssignments&gt;\s*" replace="" flags="gm" byline="false">
+			<fileset dir="${srcDir}/profiles" includes="*.profile"/>
+		</replaceregexp>
+    <delete dir="${srcDirCopy}"/>
+  </target>
+	<!-- deploy the changes to target org -->	
+	<target name="deploy" depends="sfdcDetails">
+      <echo level="info">Performing the deploy</echo>
+      <sf:deploy
+        username="${sf.username}"
+        password="${passwordToken}"
+        serverurl="${sf.serverurl}"
+        deployRoot="${srcDir}"
+        pollWaitMillis="${sf.pollWaitMillis}"
+        maxPoll="${sf.maxPoll}"/>
+    </target>
+	<!-- Run test on the to target org -->	
+    <target name="deployEmptyCheckOnly" depends="sfdcDetails">
+      <echo level="info">Testing the deploy</echo>
+      <sf:deploy
+	      checkOnly="true"
+          logType="Debugonly"
+          username="${sf.username}"
+          password="${passwordToken}"
+          serverurl="${sf.serverurl}"
+          deployRoot="${srcDir}"
+          pollWaitMillis="${sf.pollWaitMillis}"
+          maxPoll="${sf.maxPoll}"
+		  runAllTests="true" />
+    </target>
+	
+</project>
