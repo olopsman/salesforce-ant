@@ -1,28 +1,57 @@
-# salesforce-ant
-Salesforce Ant Migration Tool
-
-This a Salesforce simple fetch and deploy using ant migration tool
-
-build.xml - file defines the configuration
-build.properties -
-package.xml file - defines the metadata to retrieve
-src folder - the output for the retrieved metadata
-src/package.xml - the output package.xml for the src folder
-environments folder - contains the credentials for target org
-environments/<org>.properties file - org defines the environment
+# Custom Salesforce Ant
+> Deploy Salesforce metadata using Ant.
 
 
-Fetch Build
-	ant -Denvironment=sandbox -buildfile build.xml fetchMetadata
+Fetch, delete and deploy Salesforce metadata using ant
+
+
+## Prequisite
+
+Java
+Ant - Add ant to path in the System Environment
+
+## Setup
+
+Update environment properties with Salesforce credentials the target org
+
+e.g. sandbox.properties, prod.properties
+
+## Development Usage
+
+Define the package.xml with the Saleforce Metadata to retrieve
+
+Open the command line on the same directory as your build
+
+Fetch Metadata 
+```sh
+ant -Denvironment=sandbox -buildfile build.xml fetchMetadata
+```
 
 Deploy Build
-	ant -Denvironment=prod -buildfile build.xml deployMetadata
+```sh
+ant -Denvironment=prod -buildfile build.xml deployMetadata
+```
 
 Undeploy Build
-	ant -Denvironment=prod -buildfile build.xml undeployCode	
+```sh
+ant -Denvironment=prod -buildfile build.xml undeployCode
+```
 
 Validate Build
-	ant -Dsandbox=prod -buildfile build.xml deployEmptyCheckOnly
+```sh
+ant -Denvironment=prod -buildfile build.xml deployEmptyCheckOnly
+```
 
 
-To create an executable bat file. Open notepad and paste the ant command and save the file as a .bat. Eg. fetchSandbox.bat. Call the fetchSandbox from the command prompt.
+## Meta
+
+Paulo Orquillo – [@olopsman](https://twitter.com/olopsman) 
+
+## Contributing
+
+1. Fork it 
+2. Create your feature branch (`git checkout -b feature/fooBar`)
+3. Commit your changes (`git commit -am 'Add some fooBar'`)
+4. Push to the branch (`git push origin feature/fooBar`)
+5. Create a new Pull Request
+
