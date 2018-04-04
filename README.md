@@ -12,7 +12,7 @@ Ant - Add ant to path in the System Environment
 
 ## Setup
 
-Update environment properties with Salesforce credentials the target org
+Update environment properties with Salesforce credentials for the target org
 
 e.g. sandbox.properties, prod.properties
 
