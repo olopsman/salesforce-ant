@@ -22,7 +22,7 @@ Define the package.xml with the Saleforce Metadata to retrieve
 
 Open the command line on the same directory as your build
 
-Fetch Metadata 
+Fetch Metadata
 ```sh
 ant -Denvironment=sandbox -buildfile build.xml fetchMetadata
 ```
@@ -45,13 +45,16 @@ ant -Denvironment=prod -buildfile build.xml deployEmptyCheckOnly
 
 ## Meta
 
-Paulo Orquillo – [@olopsman](https://twitter.com/olopsman) 
+Paulo Orquillo – [@olopsman](https://twitter.com/olopsman)
+
+## TODO
+
+Generate a package.xml from describeMetadata
 
 ## Contributing
 
-1. Fork it 
+1. Fork it
 2. Create your feature branch (`git checkout -b feature/fooBar`)
 3. Commit your changes (`git commit -am 'Add some fooBar'`)
 4. Push to the branch (`git push origin feature/fooBar`)
 5. Create a new Pull Request
-
