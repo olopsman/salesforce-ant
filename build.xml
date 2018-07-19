@@ -5,13 +5,13 @@
     <condition property="sf.sessionId" value=""> <not> <isset property="sf.sessionId"/> </not> </condition>
     <taskdef resource="com/salesforce/antlib.xml" uri="antlib:com.salesforce">
         <classpath>
-            <pathelement location="${basedir}/ant-salesforce.jar" />        	
+            <pathelement location="${basedir}/ant-salesforce.jar" />
         </classpath>
     </taskdef>
 	<property name="passwordToken" value="${sf.password}${sf.token}"/>
 	<property name="srcDir" value="${basedir}/src" />
 	<property name="srcDirCopy" value="${basedir}/src-copy" />
-	
+
 	<target name="sfdcDetails">
     <echo>Base Dir: ${basedir}</echo>
 		<echo>Environment: ${environment}</echo>
@@ -24,7 +24,7 @@
 
     <target name="retrieveMetadata">
       <echo level="info">Retrieving the server's version of code ${sf.username} ${sf.serverurl}</echo>
-      <!-- Retrieve the contents into a temp src directory -->      
+      <!-- Retrieve the contents into a temp src directory -->
       <delete dir="${srcDir}"/>
       <mkdir dir="${srcDirCopy}"/>
       <sf:retrieve
@@ -34,19 +34,19 @@
         serverurl="${sf.serverurl}"
         unpackaged="package.xml"/>
     </target>
-    
-    <!-- Remove unwanted metadata specified on this target -->      	
+
+    <!-- Remove unwanted metadata specified on this target -->
   	<target name="copyMetadata">
   		<echo>Copying source to ${srcDir} to exclude unwanted files</echo>
       <mkdir dir="${srcDir}"/>
       <copy todir="${srcDir}">
   			<fileset dir="${srcDirCopy}">
           <!-- example for removing elements -->
-          <exclude name="workflows/Account.workflow"/>    
-          <exclude name="settings/Search.settings"/>        
+          <exclude name="workflows/Account.workflow"/>
+          <exclude name="settings/Search.settings"/>
         </fileset>
   		</copy>
-  		<!-- example to remove an element from profile using regex 
+  		<!-- example to remove an element from profile using regex
     <replaceregexp match="&lt;applicationVisibilities&gt;\s*&lt;application&gt;standard__Insights&lt;/application&gt;\s*
 &lt;default&gt;false&lt;/default&gt;\s*
 &lt;visible&gt;true&lt;/visible&gt;\s*
@@ -56,7 +56,7 @@
       <!-- remove the temp srcDir copy -->
       <delete dir="${srcDirCopy}"/>
     </target>
-	<!-- deploy the changes to target org -->	
+	<!-- deploy the changes to target org -->
 	<target name="deployMetadata" depends="sfdcDetails">
       <echo level="info">Performing the deploy</echo>
       <sf:deploy
@@ -67,7 +67,7 @@
         pollWaitMillis="${sf.pollWaitMillis}"
         maxPoll="${sf.maxPoll}"/>
     </target>
-	  <!-- Run test on the to target org -->	
+	  <!-- Run test on the to target org -->
     <target name="deployEmptyCheckOnly" depends="sfdcDetails">
       <echo level="info">Testing the deploy</echo>
       <sf:deploy
@@ -81,5 +81,20 @@
           maxPoll="${sf.maxPoll}"
 		  runAllTests="true" />
     </target>
-	
+    <macrodef name="git">
+      <attribute name="dir" default="" />
+      <attribute name="branch" default="master" />
+      <sequential>
+        <exec executable="git" dir="@{dir}">
+          <arg value="pull" />
+          <arg value="origin" />
+          <arg value="@{branch}" />
+        </exec>
+      </sequential>
+    </macrodef>
+    <target name="checkoutFromGit">
+      <echo>Issuing git pull from directory: ${git.dir}</echo>
+      <echo>Pulling from branch: ${git.branch}</echo>
+      <git dir="${git.dir}" branch="${git.branch}" />
+    </target>
 </project>
