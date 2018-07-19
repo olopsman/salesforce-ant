@@ -79,7 +79,7 @@
           deployRoot="${srcDir}"
           pollWaitMillis="${sf.pollWaitMillis}"
           maxPoll="${sf.maxPoll}"
-		  runAllTests="true" />
+		      testLevel="RunLocalTests" />
     </target>
     <macrodef name="git">
       <attribute name="dir" default="" />
