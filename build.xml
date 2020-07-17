@@ -43,7 +43,7 @@
       <antcall target="replaceCustomLabels" />
     </target>
 
-    <property name="test.email" value="ertm2@genesisenergy.co.nz" />
+    <property name="test.email" value="ertm2@test.co.nz" />
 
     <target name="replaceCustomLabels">
       <if>
